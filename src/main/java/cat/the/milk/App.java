@@ -1,4 +1,4 @@
-package com.mycompany.mavenproject3;
+package cat.the.milk;
 
 import java.io.IOException;
 import java.util.logging.Level;

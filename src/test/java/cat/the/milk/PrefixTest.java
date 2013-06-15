@@ -4,8 +4,6 @@
  */
 package cat.the.milk;
 
-import com.mycompany.mavenproject3.Prefix;
-import com.mycompany.mavenproject3.Token;
 import java.util.ArrayList;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;

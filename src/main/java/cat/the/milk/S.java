@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.mavenproject3;
+package cat.the.milk;
 
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
