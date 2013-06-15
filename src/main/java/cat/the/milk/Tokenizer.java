@@ -285,7 +285,7 @@ public class Tokenizer {
                     .each(trim)
                     ;
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Milk.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         

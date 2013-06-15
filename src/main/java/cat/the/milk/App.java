@@ -1,6 +1,5 @@
 package cat.the.milk;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,12 +11,10 @@ public class App
 {
     public static void main( String[] args )
     {
-        Main m;
+        Milk m;
         try {
-            m = new Main();
-            m.go();
-        } catch (IOException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            m = new Milk();
+            m.eval("");
         } catch (Exception ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
