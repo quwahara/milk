@@ -1,0 +1,38 @@
+111
+222  "
+333  \"
+444  "  44
+555
+
+#aa
+aaaaaaaa
+aaaaaaaa
+aaaaaaaa
+##bb
+bbbbbbbb
+bbbbbbbb
+bbbbbbbb
+#cc
+cccccc
+cccccc
+
+#class Hoge
+
+##fun fuga
+
+
+##fun piyo
+
+
+#class Hoge hoge
+
+
+##act fuga
+
+ 
+
+if c then
+end
+
+##fun piyo
+

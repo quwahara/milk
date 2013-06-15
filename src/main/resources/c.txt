@@ -1,0 +1,5 @@
+#class A
+
+##fun B
+
+##fun C
