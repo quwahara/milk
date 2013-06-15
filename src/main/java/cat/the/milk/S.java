@@ -37,4 +37,12 @@ public class S {
         return p.split(text);
     }
     
+    public static final String BGV = "({)";     /// begin value
+    public static final String ENV = "(})";     /// end value
+    
+    public static final String BGG = "bg";      /// begin group
+    public static final String ENG = "en";      /// end group
+    
+    public static final String NLG = "nl";      /// new line group
+    
 }
