@@ -25,41 +25,12 @@ public class Tokenizer {
    
     protected LineIterator it;
 
-    String choprgx;
+//    String choprgx;
     LinkedHashMap<String, Pattern> pmap;    /// pattern map
     
     
     
     public Tokenizer init() throws Exception {
-
-        String x;   // regex for chop
-        x = "(";
-        //  handle escape
-        x += "\\\\.";
-        x += "|\\\\";
-
-        //  handle new line
-        x += "|\\r\\n";
-        x += "|\\r";
-        x += "|\\n";
-
-        //  handle spaces
-        x += "| +";
-        x += "|\\t+";
-        x += "|\\s+";
-
-        //  section marker
-        x += "|^#+";
-
-
-        x += "|\\d+";
-        x += "|\\w+";
-        x += "|.";
-
-        x += ")";
-        
-        choprgx = x;
-        
         
         pmap = new LinkedHashMap<String, Pattern>();
 
@@ -76,12 +47,8 @@ public class Tokenizer {
     }
     
     public List<Token> eval(String ftx) throws IOException {
-//        File f;
-//        String ftx;
-        Effect ef; List<Token> l;
         
-//        f = FileUtils.getFile(fn);
-//        ftx = FileUtils.readFileToString(f, enc);
+        Effect ef; List<Token> l;
         
         ef = new Effect();
         l = new ArrayList<Token>(1);
@@ -112,7 +79,7 @@ public class Tokenizer {
 
         //  chop to tokens
         FuncBin<Token, Effect, List<Token>> chop;
-        final Pattern chopptn = Pattern.compile(choprgx);
+//        final Pattern chopptn = Pattern.compile(choprgx);
         
 //        chop = new FuncBin<Token, Effect, List<Token>>() {
 //            public List<Token> eval(Token c, Effect ctx) {
@@ -253,6 +220,7 @@ public class Tokenizer {
                 List<Token> l = new ArrayList<Token>();
                 if (S.eq("sp", c.G)) { return l; }
                 if (S.eq("nl", c.G)) { return l; }
+                if (S.eq("sc", c.G)) { return l; }
                 l.add(c);
                 return l;
             }
@@ -260,7 +228,7 @@ public class Tokenizer {
         
         try {
             ef
-                    .setTraceOn(true)
+//                    .setTraceOn(true)
                     .init(l)
                     .each(tolines)
                     .each(chop)
