@@ -3,6 +3,7 @@ package cat.the.milk;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.objectweb.asm.Type;
 
 /**
  * Unit test for simple App.
@@ -31,8 +32,16 @@ public class AppTest
     /**
      * Rigourous Test :-)
      */
-    public void testApp()
+    public void testApp() throws ClassNotFoundException
     {
+        String s = Type.getInternalName(String.class);
+        Class c = Class.forName(s.replaceAll("/", "."));
+        
+        s = Type.getInternalName(int[].class);
+//                Class 
+        c = Class.forName("I");
+
+        Type t = Type.getType("V");
         assertTrue( true );
     }
 }

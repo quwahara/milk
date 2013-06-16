@@ -83,7 +83,8 @@ public class App
         
         cw.visitEnd();
         byte[] bs = cw.toByteArray();
-        File f = new File("../JavaApplication2/mylib/Hello.class");
+//        File f = new File("../JavaApplication2/mylib/Hello.class");
+        File f = new File("Hello.class");
         FileUtils.writeByteArrayToFile(f, bs);
         
 //        Milk m;

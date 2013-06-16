@@ -36,28 +36,30 @@ public class MilkTest extends TestCase {
         super.tearDown();
     }
 
-    public void testEval_20130616_1() throws Exception {
-        
-        Inp += "##sfun main(args:String[])  \n";
-        Inp += "";
-        
-        Epc = "(bof)[expr[({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,|)]|({)[expr]|(})]]|(})]]|(eof)]";
-        
-        M.eval(Inp);
-        Act = M.Tree.toString();
-        
-        System.out.println(Act);
-        assertEquals(Epc, Act);
-    }
+//    public void testEval_20130616_1() throws Exception {
+//        
+//        Inp += "##sfun main(args:String[])  \n";
+//        Inp += "";
+//        
+//        Epc = "(bof)[expr[({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,|)]|({)[expr]|(})]]|(})]]|(eof)]";
+//        
+//        M.eval(Inp);
+//        Act = M.Tree.toString();
+//        
+//        System.out.println(Act);
+//        assertEquals(Epc, Act);
+//    }
     
     public void testEval_20130616_2() throws Exception {
         
-        Inp += "#class C                    \n";
-        Inp += "";
-        Inp += "##sfun main(args:String[])  \n";
-        Inp += "";
+        Inp += "#class C                        \n";
+        Inp += "                                \n";
+        Inp += "##sfun main(args:String[])      \n";
+        Inp += "                                \n";
+        Inp += "    p(\"m\")                    \n";
+        Inp += "                                \n";
         
-        Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,|)]|({)[expr]|(})]]]|(})]]|(eof)]";
+        Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,|)]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
         
         M.eval(Inp);
         Act = M.Tree.toString();

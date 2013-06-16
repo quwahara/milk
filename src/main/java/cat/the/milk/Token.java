@@ -5,6 +5,7 @@
 package cat.the.milk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,6 +78,32 @@ public class Token {
         }
         c = ts.get(idx.V);
         return c;
+    }
+    
+    public Token query(String path) {
+        if (S.isEmpty(path)) {
+            return this;
+        }
+        String[] ps = path.split("/");
+        String p = ps[0];
+        boolean isGroup = '%' == p.charAt(0);
+        if (isGroup) {
+            p = p.substring(1);
+        }
+        String trg;
+        for (Token s : subs()) {
+            trg = isGroup ? s.G : s.V;
+            if (S.eq(trg, p)) {
+                if (1 == ps.length) {
+                    return s;
+                } else {
+                    List<String> pss = Arrays.asList(ps).subList(1, ps.length);
+                    String psss = StringUtils.join(pss, "/");
+                    return s.query(psss);
+                }
+            }
+        }
+        return null;
     }
     
     public static boolean unmatches(List<Token> defs, Token t) {
