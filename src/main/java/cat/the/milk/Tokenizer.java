@@ -38,6 +38,8 @@ public class Tokenizer {
         pmap.put("sp", Pattern.compile("( +|\\t+|\\s+)"));      /// SPace
         pmap.put("sc", Pattern.compile("^#+"));                 /// SeCtion
         pmap.put("ty", Pattern.compile("class"));               /// TYpe
+        pmap.put("bg", Pattern.compile("(begin|then|do)"));     /// BeGin
+        pmap.put("en", Pattern.compile("end"));                 /// ENd
         pmap.put("fn", Pattern.compile("[sv]?fun"));            /// FuNction
         pmap.put("de", Pattern.compile("\\d+"));                /// DEcimal
         pmap.put("id", Pattern.compile("\\w+"));                /// IDent
