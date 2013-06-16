@@ -36,7 +36,7 @@ public class Prefix {
     public Token eval(List<Token> ts) throws Exception {
         ts.add(0, new Token("(bof)", "id"));
         ts.add(/**/new Token("(eof)", "id"));
-        Token def = getPrefixDef(ts.get(0));
+        Token def = Token.findIn(Defs, ts.get(0));
         IntBox idx = new IntBox();
         idx.dec();
         Token t = eval(ts, idx, def);
@@ -147,26 +147,24 @@ public class Prefix {
 //        }
     }
     
+    public Infix Ix;
+    
     public Token evalExpr(List<Token> ts, IntBox idx) throws Exception {
-        Token c;
+        Token c, def;
         c = getNextToken(ts, idx);
-        Token def = getPrefixDef(c);
+        def = Token.findIn(Defs, c);
         if (def != null) {
-            idx.V = idx.V - 1;
+            idx.dec();
             Token expr = evalSingle(ts, idx, def);
             return expr;
         }
         
-        return c;
-    }
-    
-    public Token getPrefixDef(Token t) {
-        for (Token def : Defs) {
-            if(def.matches(t)) {
-                return def;
-            }
+        if (null != Ix) {
+            idx.dec();
+            return Ix.eval(ts, idx, 0);
         }
-        return null;
+        
+        return c;
     }
     
     public List<Token> Defs = new ArrayList<Token>();

@@ -198,7 +198,7 @@ public class Infix {
         throw new Exception("Not expected token found: " + infix.V);
     }
 
-    public Prefix Pfx;
+    public Prefix Px;
         
     public Token getLeft(List<Token> ts, IntBox idx) throws Exception {
 
@@ -206,11 +206,11 @@ public class Infix {
         
         c = getNextToken(ts, idx);
 
-        if (null != Pfx) {
-            def = Token.findIn(Pfx.Defs, c);
+        if (null != Px) {
+            def = Token.findIn(Px.Defs, c);
             if (null != def) {
                 idx.dec();
-                r = Pfx.eval(ts, idx, def);
+                r = Px.eval(ts, idx, def);
                 return r;
             }
         }
