@@ -206,6 +206,9 @@ public class Token {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
+        if (1 == V.length() && 0<= "\\[]|".indexOf(V)) {
+            b.append("\\");
+        }
         b.append(V);
         if(subs().size() > 0) {
             b.append("[");

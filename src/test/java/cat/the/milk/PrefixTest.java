@@ -85,26 +85,26 @@ public class PrefixTest extends TestCase {
      */
     public void testEval_List_root() throws Exception {
         result = P.eval(Ts);
-        System.out.println(result.toString());
+//        System.out.println(result.toString());
         assertEquals("(bof)[expr|(eof)]", result.toString());
     }
 
     public void testEval_List_root_test() throws Exception {
         addT("test", "id");
         result = P.eval(Ts);
-        System.out.println(result.toString());
+//        System.out.println(result.toString());
         assertEquals("(bof)[expr[test]|(eof)]", result.toString());
     }
 
-    public void testEval_List_fun() throws Exception {
-        addT("fun", "fn");
-        addT("name", "id");
-        addT("({)", "bg");
-        addT("(})", "en");
-        result = P.eval(Ts);
-        System.out.println(result.toString());
-        assertEquals("(bof)[expr[fun[name|({)[expr]|(})]]|(eof)]", result.toString());
-    }
+//    public void testEval_List_fun() throws Exception {
+//        addT("fun", "fn");
+//        addT("name", "id");
+//        addT("({)", "bg");
+//        addT("(})", "en");
+//        result = P.eval(Ts);
+////        System.out.println(result.toString());
+//        assertEquals("(bof)[expr[fun[name|({)[expr]|(})]]|(eof)]", result.toString());
+//    }
 
     public void testEval_List_type() throws Exception {
         addT("class", "ty");
@@ -112,7 +112,7 @@ public class PrefixTest extends TestCase {
         addT("({)", "bg");
         addT("(})", "en");
         result = P.eval(Ts);
-        System.out.println(result.toString());
+//        System.out.println(result.toString());
         assertEquals("(bof)[expr[class[name|({)[expr]|(})]]|(eof)]", result.toString());
     }
     
@@ -121,10 +121,67 @@ public class PrefixTest extends TestCase {
         addT("({)", "bg");
         addT("(})", "en");
         result = P.eval(Ts);
-        System.out.println(result.toString());
+//        System.out.println(result.toString());
         assertEquals("(bof)[expr[({)[expr|(})]]|(eof)]", result.toString());
     }
     
+    public void testEval_List_fun_0() throws Exception {
+        addT("fn", "id");
+        addT("f", "id");
+        addT("(", "");
+        addT(")", "");
+        addT("({)", "bg");
+        addT("(})", "en");
+        result = P.eval(Ts);
+        System.out.println(result.toString());
+        assertEquals("(bof)[expr[fn|f|(|)|({)[expr|(})]]|(eof)]", result.toString());
+    }
+    
+    public void testEval_List_fun_1() throws Exception {
+        addT("fn", "id");
+        addT("f", "id");
+        addT("(", "");
+        addT("args", "id");
+        addT(")", "");
+        addT("({)", "bg");
+        addT("(})", "en");
+        result = P.eval(Ts);
+        System.out.println(result.toString());
+        assertEquals("(bof)[expr[fn|f|(|args|)|({)[expr|(})]]|(eof)]", result.toString());
+    }
+    
+    public void testEval_List_fun_2() throws Exception {
+        addT("fn", "id");
+        addT("f", "id");
+        addT("(", "");
+        addT("arg", "id");
+        addT(",", "");
+        addT("arg", "id");
+        addT(")", "");
+        addT("({)", "bg");
+        addT("(})", "en");
+        result = P.eval(Ts);
+        System.out.println(result.toString());
+        assertEquals("(bof)[expr[fn|f|(|arg|,|arg|)|({)[expr|(})]]|(eof)]", result.toString());
+    }
+    
+    public void testEval_List_fun_3() throws Exception {
+        addT("fn", "id");
+        addT("f", "id");
+        addT("(", "");
+        addT("arg", "id");
+        addT(",", "");
+        addT("arg", "id");
+        addT(",", "");
+        addT("arg", "id");
+        addT(")", "");
+        addT("({)", "bg");
+        addT("(})", "en");
+        result = P.eval(Ts);
+        System.out.println(result.toString());
+        assertEquals("(bof)[expr[fn|f|(|arg|,|arg|,|arg|)|({)[expr|(})]]|(eof)]", result.toString());
+    }
+
 //    public void testEval_List_if() throws Exception {
 //        addT("if", "id");
 //        addT("true", "");

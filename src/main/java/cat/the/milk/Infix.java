@@ -9,8 +9,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import static cat.the.milk.Token.getNextToken;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -111,7 +109,7 @@ public class Infix {
                 continue;
             }
             cols = S.splitS(line);
-            for (int i = 2; i < cols.length; ++i) {
+            for (int i = 0; i < cols.length; ++i) {
                 Token t;
                 String col;
                 col = cols[i];

@@ -23,13 +23,16 @@ public class Prefix {
         String s = "";
         //      |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------
         s += "  @exprs  %{bg    $expr*  $}      \n";
-        s += "  %{fn    %id     @exprs  %}en    \n";
+        s += "  %{fn    %id     @prms   @rtype  @exprs  %}en            \n";
+        s += "  @prms   #{(     $expr?  #{,*    $expr   $}      #})     \n";
+        s += "  @rtype  #{:?    $expr   $}                              \n";
         s += "  %{ty    %id     @exprs  %}en    \n";
         s += "  #{if    $expr   @exprs  @elif   @else   %}en    \n";
         s += "  @elif   #{elif* $expr   @exprs  $}              \n";
         s += "  @else   #{else? $expr*  $}                      \n";
         s += "  %{bg    $expr*  %}en    \n";
         s += "  #{(bof) $expr*  #}(eof)                 \n";
+        
         return s;
     }
 
@@ -57,13 +60,13 @@ public class Prefix {
         Token c = getNextToken(ts, idx);
         Token r;
         List<Token> ends = def.ends();
-        Token defOne = new Token(def.V, def.G, '1');
+        Token defExprOne = new Token(def.V, def.G, '1');
         Token t = new Token(def.V, def.G);
         
         boolean notEnd = Token.unmatches(ends, c);
         while (notEnd) {
             idx.dec();
-            r = evalSingle(ts, idx, defOne);
+            r = evalSingle(ts, idx, defExprOne);
             if (null != r) {
                 rs.add(r);
             }
@@ -107,44 +110,6 @@ public class Prefix {
         }
         
         throw new Exception("expected a token but none");
-
-//        if (S.eq("[", def.G)) {
-//
-//            idx.V = idx.V - 1;
-//            IntBox tmpidx = new IntBox();
-//            tmpidx.V = idx.V;
-//            
-//            r = null;
-//            boolean success = false;
-//            for (Token d : def.subs()) {
-//                r = null;
-//                success = false;
-//                try {
-//                    tmpidx.V = idx.V;
-//                    r = eval(ts, tmpidx, d);
-//                    success = true;
-//                } catch (Exception e) {
-//                    
-//                }
-//                if (success) {
-//                    break;
-//                }
-//            }
-//            if (success) {
-//                idx.V = tmpidx.V;
-//            } else {
-//                throw new Exception("no more token");
-//            }
-//            return r;
-//            
-//        }
-//        
-//        {
-//            if (unmatches(def, c)) {
-//                throw new Exception("not expected token:" + c.toString());
-//            }
-//            return c;
-//        }
     }
     
     public Infix Ix;
@@ -251,17 +216,6 @@ public class Prefix {
                     l = stk.pop();
                     continue;
                 }
-//                if (S.eq("[", d.G)) {
-//                    l.add(d);
-//                    stk.push(l);
-//                    l = d.subs();
-//                    continue;
-//                }
-//                if (S.eq("]", d.G)) {
-//                    stk.push(l);
-//                    l = stk.pop();
-//                    continue;
-//                }
                 l.add(d);
             }
             Defs.add(l.get(0));

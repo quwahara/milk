@@ -13,14 +13,20 @@ import java.util.List;
 public class Milk {
 
     public Tokenizer Z;
-    public Prefix P;
+    public Prefix Px;
+    public Infix Ix;
     public Token Tree;
     
     public Milk init() throws Exception {
         Z = new Tokenizer();
         Z.init();
-        P = new Prefix();
-        P.init(Prefix.defaultConf());
+        Px = new Prefix();
+        Px.init(Prefix.defaultConf());
+        Ix = new Infix();
+        Ix.initFactors(Infix.defaultFactorConf());
+        Ix.initFixes(Infix.defaultFixConf());
+        Ix.Px = Px;
+        Px.Ix = Ix;
         return this;
     }
 
@@ -28,7 +34,7 @@ public class Milk {
         
         List<Token> ts;
         ts = Z.eval(source);
-        Tree = P.eval(ts);
+        Tree = Px.eval(ts);
         
         return this;
     }    

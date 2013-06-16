@@ -70,9 +70,14 @@ public class TokenizerTest extends TestCase {
         assertEquals(EpcG, gs(Act));
     }
     
-    /**
-     * Test of eval method, of class Tokenizer.
-     */
+    public void addT(String v, String g) {
+        Ts.add(new Token(v, g));
+    }
+    
+    public void addT(String v, String g, int col) {
+        Ts.add(new Token(v, g, -1, col));
+    }
+    
     public void testSection_sec1() throws Exception {
         
         Ts.add(new Token("#", "sc", -1, 0));
@@ -198,6 +203,20 @@ public class TokenizerTest extends TestCase {
         assertEquals(EpcV, vs(Ef.L));
     }
     
+    public void testSection_sec6() throws Exception {
+        
+        Ts.add(new Token("##", "sc", -1, 0));
+        Ts.add(new Token("sec", "id"));
+        Ts.add(new Token("(nl)", "nl"));
+        Ef.init(Ts)
+                .each(Tokenizer.section())
+                ;
+        
+        EpcV += "({) ## sec (nl) ({) (}) (})";
+        
+        System.out.println(vs(Ef.L));
+        assertEquals(EpcV, vs(Ef.L));
+    }
     
     
 //    /**

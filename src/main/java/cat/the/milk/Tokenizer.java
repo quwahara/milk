@@ -39,6 +39,8 @@ public class Tokenizer {
         pmap.put("nl", Pattern.compile("(\\r\\n|\\r|\\n)"));    /// New Line
         pmap.put("sp", Pattern.compile("( +|\\t+|\\s+)"));      /// SPace
         pmap.put("sc", Pattern.compile("^#+"));                 /// SeCtion
+        pmap.put("ty", Pattern.compile("class"));               /// TYpe
+        pmap.put("fn", Pattern.compile("[sv]?fun"));            /// FuNction
         pmap.put("de", Pattern.compile("\\d+"));                /// DEcimal
         pmap.put("id", Pattern.compile("\\w+"));                /// IDent
         pmap.put("ay", Pattern.compile("."));                   /// AnY
@@ -156,64 +158,6 @@ public class Tokenizer {
             }
         };
         
-        //  insert range tokens for section
-//        FuncBin<Token, Effect, List<Token>> section;
-//        section = new FuncBin<Token, Effect, List<Token>>() {
-//            public List<Token> eval(Token c, Effect ctx) {
-//                List<Token> l = new ArrayList<Token>();
-//                Token t;
-//
-//                Pattern p = Pattern.compile("^#+");
-//                Matcher m = p.matcher(c.V);
-//
-//                if (c.Col == 0 && m.find()) {
-//                    if (false == ctx.S.empty()) {
-//                        t = ctx.S.pop();
-//                        int pad = t.length() - c.length();
-//                        if (0 <= pad) {
-//                            for (int i = 0; i <= pad; ++i) {
-//                                l.add(new Token(".}", "en", c.Line, c.Col));
-//                            }
-//                        } else {
-//                            for (int i = pad; i < -1; ++i) {
-//                                l.add(new Token(".{", "bg", c.Line, c.Col));
-//                            }
-//                        }
-//                    }
-//                    ctx.S.push(c);
-//                    ctx.S.push(new Token(".{", "bg", c.Line, -1));
-//                    l.add(c);
-//                    
-//                } else if (S.eq(c.G, "nl")) {
-//                    
-//                    l.add(c);
-//                    //  put begin region after new line
-//                    if (false == ctx.S.empty() && S.eq(ctx.S.peek().G, "bg")) {
-//                        t = ctx.S.pop();
-//                        t.Col = c.Col + c.length();
-//                        l.add(t);
-//                    }
-//                    
-//                } else {
-//                    
-//                    l.add(c);
-//                    
-//                }
-//                
-//                if (ctx.isLast() && false == ctx.S.empty()) {
-//                    t = ctx.S.pop();
-//                    int pad = t.length();
-//                    for (int i = 0; i < pad; ++i) {
-//                        l.add(new Token(".}", "en", c.Line, c.Col));
-//                    }
-//                }
-//                
-//                return l;
-//            }
-//        };
-        
-        
-                //  insert range tokens for section
         FuncBin<Token, Effect, List<Token>> trim;
         trim = new FuncBin<Token, Effect, List<Token>>() {
             public List<Token> eval(Token c, Effect ctx) {
@@ -251,6 +195,7 @@ public class Tokenizer {
      */
     public static FuncBin<Token, Effect, List<Token>> section() {
         return new FuncBin<Token, Effect, List<Token>>() {
+            
             public List<Token> eval(Token c, Effect ctx) {
                 List<Token> l = new ArrayList<Token>();
                 Token t;
@@ -270,6 +215,12 @@ public class Tokenizer {
                             for (int i = pad; i < -1; ++i) {
                                 l.add(new Token(S.BGV, S.BGG, c.Line, c.Col));
                             }
+                        }
+                    } else {
+                        // padding begin if first section is not level one
+                        int pad = c.length() - 1;
+                        for (int i = 0; i < pad; ++i) {
+                            l.add(new Token(S.BGV, S.BGG, c.Line, c.Col));
                         }
                     }
                     ctx.S.push(c);
