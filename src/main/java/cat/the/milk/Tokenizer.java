@@ -25,21 +25,12 @@ public class Tokenizer {
    
     protected LineIterator it;
 
-    String fn;
-    String enc;
     String choprgx;
     LinkedHashMap<String, Pattern> pmap;    /// pattern map
     
     
     
     public Tokenizer init() throws Exception {
-
-//        fn = "/Users/mitsuaki/NetBeansProjects/mavenproject3/b.txt";
-        fn = "/Users/mitsuaki/NetBeansProjects/mavenproject3/src/main/resources/";
-//        fn += "b.txt";
-        fn += "c.txt";
-
-        enc = "UTF-8";
 
         String x;   // regex for chop
         x = "(";
@@ -72,24 +63,16 @@ public class Tokenizer {
         
         pmap = new LinkedHashMap<String, Pattern>();
 
-        pmap.put("es", Pattern.compile("\\\\."));               /// Escape
-        pmap.put("sy", Pattern.compile("\\\\"));                /// sYmbol
-        pmap.put("nl", Pattern.compile("(\\r\\n|\\r|\\n)"));    /// New line
-        pmap.put("sp", Pattern.compile("( +|\\t+|\\s+)"));      /// Space
-        pmap.put("sc", Pattern.compile("^#+"));                 /// seCtion
-        pmap.put("de", Pattern.compile("\\d+"));                /// Decimal
-        pmap.put("id", Pattern.compile("\\w+"));                /// Ident
-        pmap.put("ay", Pattern.compile("."));                   /// Any
+        pmap.put("es", Pattern.compile("\\\\."));               /// EScape
+        pmap.put("sy", Pattern.compile("\\\\"));                /// SYmbol
+        pmap.put("nl", Pattern.compile("(\\r\\n|\\r|\\n)"));    /// New Line
+        pmap.put("sp", Pattern.compile("( +|\\t+|\\s+)"));      /// SPace
+        pmap.put("sc", Pattern.compile("^#+"));                 /// SeCtion
+        pmap.put("de", Pattern.compile("\\d+"));                /// DEcimal
+        pmap.put("id", Pattern.compile("\\w+"));                /// IDent
+        pmap.put("ay", Pattern.compile("."));                   /// AnY
 
-        Prefix pfx = new Prefix();
-        pfx
-                .init(Prefix.defaultConf())
-                ;
-        
-        
-        
         return this;
-        
     }
     
     public List<Token> eval(String ftx) throws IOException {
@@ -178,11 +161,12 @@ public class Tokenizer {
                 List<Token> l = new ArrayList<Token>();
                 if(StringUtils.equals(c.V, "\"")) {
                     if (false == ctx.S.empty()) {
-                        //  in double quote
+                        //  end double quote
                         ctx.S.peek().V += c.V;
                         l.add(ctx.S.pop());
                     } else {
-                        //  not in double quote
+                        //  begin double quote
+                        c.G = S.STG;
                         ctx.S.push(c);
                     }
                 } else {

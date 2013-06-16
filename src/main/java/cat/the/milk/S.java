@@ -37,6 +37,11 @@ public class S {
         return p.split(text);
     }
     
+    public static String[] splitS(String text) {
+        Pattern p = Pattern.compile("\\s+");
+        return p.split(text);
+    }
+    
     public static final String BGV = "({)";     /// begin value
     public static final String ENV = "(})";     /// end value
     
@@ -45,4 +50,5 @@ public class S {
     
     public static final String NLG = "nl";      /// new line group
     
+    public static final String STG = "st";      /// string literal group
 }

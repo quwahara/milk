@@ -11,6 +11,8 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
+import static cat.the.milk.Token.getNextToken;
+
 /**
  *
  * @author mitsuaki
@@ -49,24 +51,24 @@ public class Prefix {
         }
     }
         
-    public Token evalMany(List<Token> ls, IntBox idx, Token def) throws Exception {
+    public Token evalMany(List<Token> ts, IntBox idx, Token def) throws Exception {
     
         List<Token> rs = new ArrayList<Token>();
-        Token c = getNextToken(ls, idx);
+        Token c = getNextToken(ts, idx);
         Token r;
         List<Token> ends = def.ends();
         Token defOne = new Token(def.V, def.G, '1');
         Token t = new Token(def.V, def.G);
         
-        boolean notEnd = unmatches(ends, c);
+        boolean notEnd = Token.unmatches(ends, c);
         while (notEnd) {
             idx.dec();
-            r = evalSingle(ls, idx, defOne);
+            r = evalSingle(ts, idx, defOne);
             if (null != r) {
                 rs.add(r);
             }
-            c = getNextToken(ls, idx);
-            notEnd = unmatches(ends, c);
+            c = getNextToken(ts, idx);
+            notEnd = Token.unmatches(ends, c);
         }
         idx.dec();
         t.subs().addAll(rs);
@@ -79,7 +81,7 @@ public class Prefix {
         c = getNextToken(ts, idx);
         Token r;
         if (S.eq("#", def.G) || S.eq("%", def.G)) {
-            if (unmatches(def, c)) {
+            if (def.unmatches(c)) {
                 if (def.AF == '1') {
                     throw new Exception("not expected token:" + c.toString());
                 } else {
@@ -160,73 +162,17 @@ public class Prefix {
     
     public Token getPrefixDef(Token t) {
         for (Token def : Defs) {
-            if(matches(def, t)) {
+            if(def.matches(t)) {
                 return def;
             }
         }
         return null;
     }
     
-    public static boolean unmatches(Token def, Token t) {
-        return false == matches(def, t);
-    }
-    
-    public static boolean unmatches(List<Token> defs, Token t) {
-        return false == matches(defs, t);
-    }
-    
-    public static boolean matches(List<Token> defs, Token t) {
-        for (Token def : defs) {
-            if (matches(def, t)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public static boolean matches(Token def, Token t) {
-        
-        char g = def.G.charAt(0);
-        
-        //  #: id
-        if ('#' == g) {
-            return S.eq("id", t.G) && S.eq(def.V, t.V);
-        }
-        
-        //  %: group
-        if ('%' == g) {
-            return S.eq(def.V, t.G);
-        }
-        
-        //  {: begin
-        if ('{' == g) {
-            return S.eq(def.V, t.G);
-        }
-        
-        //  }: end
-        if ('}' == g) {
-            return S.eq(def.V, t.G);
-        }
-                
-        //  @: reference 
-        if ('@' == g) {
-            return S.eq(def.G, t.G) && S.eq(def.V, t.V);
-        }
-
-        //  $: special      G
-        //  [: or           G
-        if ('$' == g || '@' == g || '[' == g) {
-            return false;
-        }
-        
-        return false;
-    }
-
     public List<Token> Defs = new ArrayList<Token>();
     
     public Prefix init(String conf) throws Exception {
         Pattern p;
-        String xx = "";
         
         Defs.clear();
         p = Pattern.compile("\\s+");
@@ -285,7 +231,6 @@ public class Prefix {
             List<Token> l = new ArrayList<Token>();
             Stack<List<Token>> stk = new Stack<List<Token>>();
             for (Token d : defs) {
-                xx = d.V;
                 char h = ' ';
                 if (StringUtils.startsWithAny(d.V, new String[]{"{", "}"})) {
                     h = d.V.charAt(0);
@@ -385,16 +330,6 @@ public class Prefix {
             b.append(k).append("\n");
         }
         return b.toString();
-    }
-
-    public static Token getNextToken(List<Token> ts, IntBox idx) throws Exception {
-        Token c;
-        idx.inc();
-        if (idx.V >= ts.size()) {
-            throw new Exception("no more token");
-        }
-        c = ts.get(idx.V);
-        return c;
     }
 
     public static HashMap<Token, List<Token>> replaceReferenceInMap(HashMap<Token, List<Token>> refmap) throws Exception {

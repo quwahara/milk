@@ -18,7 +18,12 @@ public class Token {
     public String G = "";       /// Group
     public int Line = -1;
     public int Col = -1;
-    public char AF = ' ';       /// appearance frequency
+    /** appearance frequency */
+    public char AF = ' ';
+    /** binding power */
+    public int BP;
+    /** association */
+    public char AS = ' ';
     public List<Token> _subs = null;
     public List<Token> _ends = null;
     
@@ -50,6 +55,13 @@ public class Token {
         AF = af;
     }
 
+    public Token(String v, String g, int bp, char as) {
+        V = v;
+        G = g;
+        BP = bp;
+        AS = as;
+    }
+
     public Token(String v, String g, int line, int col) {
         V = v;
         G = g;
@@ -57,6 +69,76 @@ public class Token {
         Col = col;
     }
     
+    public static Token getNextToken(List<Token> ts, IntBox idx) throws Exception {
+        Token c;
+        idx.inc();
+        if (idx.V >= ts.size()) {
+            throw new Exception("no more token");
+        }
+        c = ts.get(idx.V);
+        return c;
+    }
+    
+    public static boolean unmatches(List<Token> defs, Token t) {
+        return false == matches(defs, t);
+    }
+    
+    public static boolean matches(List<Token> defs, Token t) {
+        return null != findIn(defs, t);
+    }
+    
+    public static Token findIn(List<Token> defs, Token t) {
+        for (Token def : defs) {
+            if (def.matches(t)) {
+                return def;
+            }
+        }
+        return null;
+    }
+    
+    public boolean unmatches(Token t) {
+        return false == matches(t);
+    }
+    
+    public boolean matches(Token t) {
+        
+        char g = G.charAt(0);
+        
+        //  #: id
+        if ('#' == g) {
+            return S.eq(V, t.V);
+        }
+        
+        //  %: group
+        if ('%' == g) {
+            return S.eq(V, t.G);
+        }
+        
+        //  {: begin
+        if ('{' == g) {
+            return S.eq(V, t.G);
+        }
+        
+        //  }: end
+        if ('}' == g) {
+            return S.eq(V, t.G);
+        }
+                
+        //  @: reference 
+        if ('@' == g) {
+            return S.eq(G, t.G) && S.eq(V, t.V);
+        }
+
+        //  $: special      G
+        //  [: or           G
+        if ('$' == g || '[' == g) {
+            return false;
+        }
+        
+        return false;
+    }
+    
+    @Override
     public Token clone() {
         Token t = new Token();
         t.V = V;
