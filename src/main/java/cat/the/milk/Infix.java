@@ -206,15 +206,17 @@ public class Infix {
         
         c = getNextToken(ts, idx);
 
-        if (Token.matches(Factors, c)) {
-            return c;
+        if (null != Pfx) {
+            def = Token.findIn(Pfx.Defs, c);
+            if (null != def) {
+                idx.dec();
+                r = Pfx.eval(ts, idx, def);
+                return r;
+            }
         }
         
-        def = Token.findIn(Pfx.Defs, c);
-        if (null != def) {
-            idx.dec();
-            r = Pfx.eval(ts, idx, def);
-            return r;
+        if (Token.matches(Factors, c)) {
+            return c;
         }
         
         throw new Exception("Not expected token found: " + c.V);
