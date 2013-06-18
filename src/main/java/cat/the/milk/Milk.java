@@ -4,6 +4,8 @@
  */
 package cat.the.milk;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,19 +30,31 @@ public class Milk {
         Ix.initFixes(Infix.defaultFixConf());
         Ix.Px = Px;
         Px.Ix = Ix;
-        Ge = new Generator();
+        Ge = new Generator().init();
         return this;
     }
+    
+    public List<Token> Ts;
 
-    public Milk eval(String source) throws Exception {
-        
-        List<Token> ts;
-        ts = Tz.eval(source);
-        Tree = Px.eval(ts);
-        Ge.recvSrc(Tree);
-        
+    public Milk evalToTokens(String source) throws IOException {
+        Ts = Tz.eval(source);
         return this;
-    }    
+    }
+    
+    public Milk evalToTree(String source) throws Exception {
+        evalToTokens(source);
+        Tree = Px.eval(Ts);
+        return this;
+    }
+    
+    public Milk eval(String source) throws Exception {
+        Ts = null;
+        Tree = null;
+        evalToTree(source);
+        Ge.recvSrc(Tree);
+        return this;
+    }
+    
     
     
     
