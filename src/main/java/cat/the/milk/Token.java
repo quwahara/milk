@@ -218,6 +218,10 @@ public class Token {
         }
         return true;
     }
+    
+    public static String vOrG(Token t) {
+        return S.isBlank(t.V) ? t.G : t.V;
+    }
 
 //    @Override
     public String toStringD() {

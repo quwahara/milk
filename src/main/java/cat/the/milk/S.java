@@ -42,6 +42,10 @@ public class S {
         return p.split(text);
     }
     
+    public static String cc(Iterable<String> c) {
+        return StringUtils.join(c, "");
+    }
+    
     public static final String BGV = "({)";     /// begin value
     public static final String ENV = "(})";     /// end value
     

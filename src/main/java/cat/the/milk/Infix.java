@@ -19,9 +19,9 @@ public class Infix {
     public static String defaultFixConf() {
         
         //  number: binding power
-        //  L: infix, left-associative
-        //  R: infix, right-associative
-        //  C: circumfix, $ is delimiter
+        //  L:      infix, left-associative
+        //  R:      infix, right-associative
+        //  C:      circumfix, $ is a delimiter
         String s = "";
         //      |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------
         s += "  310     L   as! as                \n";
@@ -133,6 +133,10 @@ public class Infix {
         
         Token left, infix;
         left = getLeft(ts, idx);
+        if (null == left) {
+            return null;
+        }
+        
         infix = getNextToken(ts, idx);
         applyAsBp(infix);
         while (infix.BP > rbp) {
@@ -217,7 +221,7 @@ public class Infix {
             return c;
         }
         
-        throw new Exception("Not expected token found: " + c.V);
+        return null;
     }
     
     /**

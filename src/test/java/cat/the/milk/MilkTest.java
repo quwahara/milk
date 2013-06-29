@@ -54,14 +54,50 @@ public class MilkTest extends TestCase {
         
         Inp += "#class C                        \n";
         Inp += "                                \n";
-        Inp += "##sfun main(args:String[])      \n";
+        Inp += "##sfun main(args:String[]):int  \n";
         Inp += "                                \n";
         Inp += "    p(\"m\")                    \n";
         Inp += "                                \n";
         
-        Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,|)]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
+        Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,]|)|:[int]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
         
-        M.eval(Inp);
+//        M.eval(Inp);
+        M.evalToTree(Inp);
+        Act = M.Tree.toString();
+        
+        System.out.println(Act);
+        assertEquals(Epc, Act);
+    }
+    
+    public void testEval_20130619_1() throws Exception {
+        
+        Inp += "#class C                        \n";
+        Inp += "                                \n";
+        Inp += "##sfun main(args:String[]):String   \n";
+        Inp += "                                \n";
+        Inp += "    p(\"m\")                    \n";
+        Inp += "                                \n";
+        
+        Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,]|)|:[String]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
+        
+//        M.eval(Inp);
+        M.evalToTree(Inp);
+        Act = M.Tree.toString();
+        
+        System.out.println(Epc);
+        System.out.println(Act);
+        assertEquals(Epc, Act);
+    }
+    
+    public void testEvalToTree() throws Exception {
+        
+        Inp += "##sfun f():String               \n";
+        Inp += "                                \n";
+        
+//        Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,|)]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
+        Epc = "(bof)[expr[({)[expr[sfun[f|(|)|:[String]|({)[expr]|(})]]|(})]]|(eof)]";
+        
+        M.evalToTree(Inp);
         Act = M.Tree.toString();
         
         System.out.println(Act);

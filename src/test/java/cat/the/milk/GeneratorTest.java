@@ -4,6 +4,7 @@
  */
 package cat.the.milk;
 
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
@@ -35,10 +36,10 @@ public class GeneratorTest extends TestCase {
         super.tearDown();
     }
 
-    public void test() throws Exception {
+    public void test0() throws Exception {
         Inp += "#class C                        \n";
         Inp += "                                \n";
-        Inp += "##sfun main(args:String[])      \n";
+        Inp += "##sfun main(args:String[]):void \n";
         Inp += "                                \n";
         Inp += "    p(\"m\")                    \n";
         Inp += "                                \n";
@@ -71,6 +72,44 @@ public class GeneratorTest extends TestCase {
         Act = Mi.Ge.toString();
 //        System.out.println(Act);
         assertEquals(Epc, Act);
+    }
+
+    public void test1() throws Exception {
+        Inp += "#class HomeController           \n";
+        Inp += "                                \n";
+        Inp += "##ofun Home():String            \n";
+        Inp += "                                \n";
+        Inp += "    return(\"home\")            \n";
+        Inp += "                                \n";
+        
+        Epc += "// class version 49.0 (49)\n";
+        Epc += "// access flags 0x21\n";
+        Epc += "public class C {\n";
+        Epc += "\n";
+        Epc += "  // compiled from: C.java\n";
+        Epc += "\n";
+        Epc += "  // access flags 0x1\n";
+        Epc += "  public <init>()V\n";
+        Epc += "    ALOAD 0\n";
+        Epc += "    INVOKESPECIAL java/lang/Object.<init> ()V\n";
+        Epc += "    RETURN\n";
+        Epc += "    MAXSTACK = 1\n";
+        Epc += "    MAXLOCALS = 1\n";
+        Epc += "\n";
+        Epc += "  // access flags 0x9\n";
+        Epc += "  public static main([Ljava/lang/String;)V\n";
+        Epc += "    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;\n";
+        Epc += "    LDC \"hello\"\n";
+        Epc += "    INVOKEVIRTUAL java/io/PrintStream.println (Ljava/lang/String;)V\n";
+        Epc += "    RETURN\n";
+        Epc += "    MAXSTACK = 2\n";
+        Epc += "    MAXLOCALS = 1\n";
+        Epc += "}\n";
+        
+        Mi.eval(Inp);
+        Act = Mi.Ge.toString();
+        System.out.println(Act);
+//        assertEquals(Epc, Act);
     }
 
 }

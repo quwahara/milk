@@ -34,14 +34,6 @@ public class AppTest
      */
     public void testApp() throws ClassNotFoundException
     {
-        String s = Type.getInternalName(String.class);
-        Class c = Class.forName(s.replaceAll("/", "."));
-        
-        s = Type.getInternalName(int[].class);
-//                Class 
-        c = Class.forName("I");
-
-        Type t = Type.getType("V");
         assertTrue( true );
     }
 }

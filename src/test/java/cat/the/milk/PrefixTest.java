@@ -182,6 +182,23 @@ public class PrefixTest extends TestCase {
         assertEquals("(bof)[expr[fn|f|(|arg|,|arg|,|arg|)|({)[expr|(})]]|(eof)]", result.toString());
     }
 
+    public void testEval_List_fun_4() throws Exception {
+        addT("fn", "id");
+        addT("f", "id");
+        addT("(", "");
+        addT("arg", "id");
+        addT(",", "");
+        addT("arg", "id");
+        addT(",", "");
+        addT("arg", "id");
+        addT(")", "");
+        addT("({)", "bg");
+        addT("(})", "en");
+        result = P.eval(Ts);
+        System.out.println(result.toString());
+        assertEquals("(bof)[expr[fn|f|(|arg|,|arg|,|arg|)|({)[expr|(})]]|(eof)]", result.toString());
+    }
+
 //    public void testEval_List_if() throws Exception {
 //        addT("if", "id");
 //        addT("true", "");

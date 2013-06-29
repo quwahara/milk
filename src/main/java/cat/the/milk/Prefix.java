@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import static cat.the.milk.Token.getNextToken;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -19,13 +21,16 @@ import static cat.the.milk.Token.getNextToken;
  */
 public class Prefix {
     
+    public Log L = LogFactory.getLog(Prefix.class);
+    public static Stack<String> LS = new Stack<String>();
+    
     public static String defaultConf() {
         String s = "";
         //      |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------
         s += "  @exprs  %{bg    $expr*  $}      \n";
-        s += "  %{fn    %id     @prms   @rtype  @exprs  %}en            \n";
-        s += "  @prms   #{(     $expr?  #{,*    $expr   $}      #})     \n";
-        s += "  @rtype  #{:?    $expr   $}                              \n";
+        s += "  %{fn    %id     @prms   @rtype  @exprs  %}en                    \n";
+        s += "  @prms   #{(     $expr?  #{,*    $expr   $}      $}      #)      \n";
+        s += "  @rtype  #{:?    $expr   $}                                      \n";
         s += "  %{ty    %id     @exprs  %}en    \n";
         s += "  #{if    $expr   @exprs  @elif   @else   %}en    \n";
         s += "  @elif   #{elif* $expr   @exprs  $}              \n";
@@ -46,58 +51,63 @@ public class Prefix {
         return t;
     }
     
-    public Token eval(List<Token> ts, IntBox idx, Token def) throws Exception {
-        if ('*' == def.AF) {
-            return evalMany(ts, idx, def);
-        } else {
-            return evalSingle(ts, idx, def);
-        }
+    public String IndentStr = "| ";
+    public void indent() {
+        LS.push(IndentStr);
     }
-        
-    public Token evalMany(List<Token> ts, IntBox idx, Token def) throws Exception {
+    public void unindent() {
+        LS.pop();
+    }
+    public String indents() {
+        return S.cc(LS);
+    }
+    public void trace(Object t) {
+        System.out.println(t);
+//        L.info(t);
+    }    
     
-        List<Token> rs = new ArrayList<Token>();
-        Token c = getNextToken(ts, idx);
-        Token r;
-        List<Token> ends = def.ends();
-        Token defExprOne = new Token(def.V, def.G, '1');
-        Token t = new Token(def.V, def.G);
+    public Token eval(List<Token> ts, IntBox idx, Token def) throws Exception {
+        Token r = null;
         
-        boolean notEnd = Token.unmatches(ends, c);
-        while (notEnd) {
-            idx.dec();
-            r = evalSingle(ts, idx, defExprOne);
-            if (null != r) {
-                rs.add(r);
-            }
-            c = getNextToken(ts, idx);
-            notEnd = Token.unmatches(ends, c);
+        if ('1' == def.AF) {
+            r = evalRequireOne(ts, idx, def);
+        } else if ('?' == def.AF) {
+            r = evalMaybeOne(ts, idx, def);
+        } else if ('*' == def.AF) {
+            return evalUntilEnd(ts, idx, def);
+        } else {
+            throw new Exception("unkown AF:" + def.AF);
         }
-        idx.dec();
-        t.subs().addAll(rs);
-        return t;
-    }
-
-    public Token evalSingle(List<Token> ts, IntBox idx, Token def) throws Exception {
         
+        if (null == r) {
+            return r;
+        }
+        
+        Token sub;
+        indent();
+        for (Token d: def.subs()) {
+            sub = eval(ts, idx, d);
+            if (null == sub && '?' == d.AF ) {
+                idx.dec();
+                break;
+            }
+            if (null != sub) {
+                r.subs().add(sub);
+            }
+        }
+        unindent();
+        return r;
+    }
+    
+    public Token evalRequireOne(List<Token> ts, IntBox idx, Token def) throws Exception {
         Token c;            /// current token
         c = getNextToken(ts, idx);
         Token r;
         if (S.eq("#", def.G) || S.eq("%", def.G)) {
             if (def.unmatches(c)) {
-                if (def.AF == '1') {
-                    throw new Exception("not expected token:" + c.toString());
-                } else {
-                    idx.dec();
-                    return null;
-                }
+                throw new Exception("not expected token:" + c.toString());
             }
-            for (Token d: def.subs()) {
-                r = eval(ts, idx, d);
-                if (null != r) {
-                    c.subs().add(r);
-                }
-            }
+            trace(S.cc(LS) + Token.vOrG(c));
             return c;
         }
         if (S.eq("$", def.G)) {
@@ -108,10 +118,59 @@ public class Prefix {
             }
             return r;
         }
-        
         throw new Exception("expected a token but none");
     }
     
+    public Token evalMaybeOne(List<Token> ts, IntBox idx, Token def) throws Exception {
+        Token c;            /// current token
+        c = getNextToken(ts, idx);
+        Token r;
+        if (S.eq("#", def.G) || S.eq("%", def.G)) {
+            if (def.unmatches(c)) {
+                idx.dec();
+                return null;
+            }
+            trace(S.cc(LS) + Token.vOrG(c));
+            return c;
+        }
+        if (S.eq("$", def.G)) {
+            idx.dec();
+            r = evalExpr(ts, idx);
+            if (null != r) {
+                trace(S.cc(LS) + Token.vOrG(r));
+            }
+            return r;
+        }
+        throw new Exception("expected a token but none");
+    }
+    
+    public Token evalUntilEnd(List<Token> ts, IntBox idx, Token def) throws Exception {
+        List<Token> rs = new ArrayList<Token>();
+        Token c = getNextToken(ts, idx);
+        Token r;
+        List<Token> ends = def.ends();
+        Token defExprRequireOne = new Token(def.V, def.G, '1');
+        Token t = new Token(def.V, def.G);
+        trace(S.cc(LS) + Token.vOrG(t));
+        
+        boolean notEnd = Token.unmatches(ends, c);
+        while (notEnd) {
+            idx.dec();
+            indent();
+            r = evalRequireOne(ts, idx, defExprRequireOne);
+            unindent();
+            if (null != r) {
+                rs.add(r);
+            }
+            c = getNextToken(ts, idx);
+            notEnd = Token.unmatches(ends, c);
+        }
+        idx.dec();
+        t.subs().addAll(rs);
+        
+        return t;
+    }
+        
     public Infix Ix;
     
     public Token evalExpr(List<Token> ts, IntBox idx) throws Exception {
@@ -120,7 +179,7 @@ public class Prefix {
         def = Token.findIn(Defs, c);
         if (def != null) {
             idx.dec();
-            Token expr = evalSingle(ts, idx, def);
+            Token expr = eval(ts, idx, def);
             return expr;
         }
         
@@ -136,6 +195,7 @@ public class Prefix {
     
     public Prefix init(String conf) throws Exception {
         Pattern p;
+        LS.clear();
         
         Defs.clear();
         p = Pattern.compile("\\s+");
@@ -176,7 +236,7 @@ public class Prefix {
             List<Token> backs;
             for (int i = 0; i < defs.size(); ++i) {
                 d = defs.get(i);
-                if ('*' == d.AF) {
+                if ('?' == d.AF || '*' == d.AF) {
                     backs = defs.subList(i + 1, defs.size());
                     for (Token b : backs) {
                         if (false == S.eq(b.G, "$")) {
