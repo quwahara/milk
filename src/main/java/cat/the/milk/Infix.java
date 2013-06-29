@@ -37,7 +37,7 @@ public class Infix {
         s += "  210     L   or                    \n";
         s += "  110     L   ->                    \n";
         s += "  110     R   = <- += -=            \n";
-        s += "  100     L   ,                     \n";
+//        s += "  100     L   ,                     \n";
         s += "  -1      L   ;                     \n";
         s += "  -1      L   return                \n";
 

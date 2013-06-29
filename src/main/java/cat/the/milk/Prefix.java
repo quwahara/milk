@@ -26,24 +26,25 @@ public class Prefix {
     
     public static String defaultConf() {
         String s = "";
-        //      |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------
+        //      |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------
+        s += "  %{fn    %id     #{(     @csv    $}      #)      #{:?    $expr   $}      @body   $}      \n";
+        s += "  @csv    ${expr? #{,~    $expr   $}      $}      \n";
         s += "  @exprs  %{bg    $expr*  $}      \n";
-        s += "  %{fn    %id     @prms   @rtype  @exprs  %}en                    \n";
-        s += "  @prms   #{(     $expr?  #{,*    $expr   $}      $}      #)      \n";
         s += "  @rtype  #{:?    $expr   $}                                      \n";
         s += "  %{ty    %id     @exprs  %}en    \n";
         s += "  #{if    $expr   @exprs  @elif   @else   %}en    \n";
         s += "  @elif   #{elif* $expr   @exprs  $}              \n";
         s += "  @else   #{else? $expr*  $}                      \n";
+        s += "  @body   %{bg    $expr*  $}      %en     \n";
         s += "  %{bg    $expr*  %}en    \n";
-        s += "  #{(bof) $expr*  #}(eof)                 \n";
+        s += "  %{bof   $expr*  %}eof                   \n";
         
         return s;
     }
 
     public Token eval(List<Token> ts) throws Exception {
-        ts.add(0, new Token("(bof)", "id"));
-        ts.add(/**/new Token("(eof)", "id"));
+        ts.add(0, new Token("(bof)", "bof"));
+        ts.add(/**/new Token("(eof)", "eof"));
         Token def = Token.findIn(Defs, ts.get(0));
         IntBox idx = new IntBox();
         idx.dec();
@@ -75,6 +76,8 @@ public class Prefix {
             r = evalMaybeOne(ts, idx, def);
         } else if ('*' == def.AF) {
             return evalUntilEnd(ts, idx, def);
+        } else if ('~' == def.AF) {
+            return evalUntilNotSelf(ts, idx, def);
         } else {
             throw new Exception("unkown AF:" + def.AF);
         }
@@ -164,6 +167,35 @@ public class Prefix {
             }
             c = getNextToken(ts, idx);
             notEnd = Token.unmatches(ends, c);
+        }
+        idx.dec();
+        t.subs().addAll(rs);
+        
+        return t;
+    }
+        
+    public Token evalUntilNotSelf(List<Token> ts, IntBox idx, Token def) throws Exception {
+        List<Token> rs = new ArrayList<Token>();
+        Token c = getNextToken(ts, idx);
+        Token r;
+        
+        Token defExprRequireOne = def.clone();
+        defExprRequireOne.AF = '1';
+//        Token defExprRequireOne = new Token(def.V, def.G, '1');
+        Token t = new Token(def.V, def.G);
+        trace(S.cc(LS) + Token.vOrG(t));
+        
+        boolean notEnd = def.matches(c);
+        while (notEnd) {
+            idx.dec();
+            indent();
+            r = eval(ts, idx, defExprRequireOne);
+            unindent();
+            if (null != r) {
+                rs.add(r);
+            }
+            c = getNextToken(ts, idx);
+            notEnd = def.matches(c);
         }
         idx.dec();
         t.subs().addAll(rs);
@@ -292,7 +324,7 @@ public class Prefix {
         for (String d : defs) {
 
             af = '1';
-            if (StringUtils.endsWithAny(d, new String[] {"1", "?", "*"})) {
+            if (StringUtils.endsWithAny(d, new String[] {"1", "?", "*", "~"})) {
                 af = d.charAt(d.length() - 1);
                 d = d.substring(0, d.length() - 1);
             }
