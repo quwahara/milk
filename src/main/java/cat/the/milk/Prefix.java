@@ -310,6 +310,9 @@ public class Prefix {
                 }
                 l.add(d);
             }
+            if (0 != stk.size()) {
+                throw new Exception("curly bracket is unmatch");
+            }
             Defs.add(l.get(0));
         }
         
