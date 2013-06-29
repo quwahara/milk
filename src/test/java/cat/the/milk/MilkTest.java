@@ -61,11 +61,10 @@ public class MilkTest extends TestCase {
         
         Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,]|)|:[int]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
         
-//        M.eval(Inp);
         M.evalToTree(Inp);
         Act = M.Tree.toString();
         
-        System.out.println(Act);
+//        System.out.println(Act);
         assertEquals(Epc, Act);
     }
     
@@ -80,12 +79,11 @@ public class MilkTest extends TestCase {
         
         Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,]|)|:[String]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
         
-//        M.eval(Inp);
         M.evalToTree(Inp);
         Act = M.Tree.toString();
         
-        System.out.println(Epc);
-        System.out.println(Act);
+//        System.out.println(Epc);
+//        System.out.println(Act);
         assertEquals(Epc, Act);
     }
     
@@ -94,13 +92,12 @@ public class MilkTest extends TestCase {
         Inp += "##sfun f():String               \n";
         Inp += "                                \n";
         
-//        Epc = "(bof)[expr[class[C|({)[expr[sfun[main|([:[args|\\[[String||\\]]]|,|)]|({)[expr[([p|\"m\"|)]]]|(})]]]|(})]]|(eof)]";
         Epc = "(bof)[expr[({)[expr[sfun[f|(|)|:[String]|({)[expr]|(})]]|(})]]|(eof)]";
         
         M.evalToTree(Inp);
         Act = M.Tree.toString();
         
-        System.out.println(Act);
+//        System.out.println(Act);
         assertEquals(Epc, Act);
     }
     
