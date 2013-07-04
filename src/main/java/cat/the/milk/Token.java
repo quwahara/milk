@@ -7,6 +7,9 @@ package cat.the.milk;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -80,6 +83,15 @@ public class Token {
         return c;
     }
     
+    /**
+     * Query in sub token of this. Returns found token.
+     * Delimiter is "/".
+     * Matches group when the token starts with "%" in the parameter path.
+     * Returns this if the parameter path is empty; 
+     * 
+     * @param path
+     * @return 
+     */
     public Token query(String path) {
         if (S.isEmpty(path)) {
             return this;
@@ -164,6 +176,74 @@ public class Token {
         
         return false;
     }
+    
+    public static Token parse(String line) throws MilkException {
+        
+        Token r, parent, holder;
+        parent = holder = new Token();
+        r = null;
+        Stack<Token> stk = new Stack<Token>();
+        // "'" is escape for "[" "]" "|"
+        Pattern p = Pattern.compile("(''|'\\[|'\\]|'\\||\\[|\\]|\\|)");
+        Matcher m = p.matcher(line);
+        String prevs = "";
+        String t ="";
+        String[] vg;
+        int prev = 0;
+        while (m.find()) {
+            if (prev < m.start()) {
+                prevs += line.substring(prev, m.start());
+            }
+            t = line.substring(m.start(), m.end());
+            
+            if (S.eq(t, "[") || S.eq(t, "]") || S.eq(t, "|")) {
+                if (S.isNotEmpty(prevs)) {
+                    vg = (prevs + ":").split(":", 3);
+                    r = new Token(vg[0], vg[1]);
+                    parent.subs().add(r);
+                    prevs = "";
+                }
+            }
+            
+            if (S.eq(t, "[")) {
+                if (null == r) {
+                    throw new MilkException("No parent token for \"[\"");
+                }
+                stk.push(parent);
+                parent = r;
+            } else if (S.eq(t, "]")) {
+                if (stk.size() == 0) {
+                    throw new MilkException("\"]\" is unmatch");
+                }
+                parent = stk.pop();
+            } else if (S.eq(t, "|")) {
+                if (parent == holder) {
+                    throw new MilkException("No parent token for \"|\"");
+                }
+            } else {
+                prevs += t;
+            }
+            prev = m.end();
+        }
+        if (prev < line.length()) {
+            prevs += line.substring(prev, line.length());
+            vg = (prevs + ":").split(":", 2);
+            r = new Token(vg[0], vg[1]);
+            parent.subs().add(r);
+            prevs = "";
+        }
+        if (0 < stk.size()) {
+            throw new MilkException("\"[\" is unmatch");
+        }
+        if (0 == holder.subs().size()) {
+            throw new MilkException("No token was parsed");
+        }
+        
+        return holder.subs().get(0);
+    }
+    
+    
+    
     
     @Override
     public Token clone() {

@@ -17,11 +17,13 @@ public class Milk {
     public Prefix Px;
     public Infix Ix;
     public Token Tree;
+    public Form Fm;
+    public Token Formed;
     public Generator Ge;
     
     public Milk init() throws Exception {
         Tz = new Tokenizer();
-        Tz.init();
+        Tz.init(Tokenizer.defaultConf());
         Px = new Prefix();
         Px.init(Prefix.defaultConf());
         Ix = new Infix();
@@ -29,6 +31,7 @@ public class Milk {
         Ix.initFixes(Infix.defaultFixConf());
         Ix.Px = Px;
         Px.Ix = Ix;
+        Fm = new Form().init();
         Ge = new Generator().init();
         return this;
     }
@@ -46,10 +49,17 @@ public class Milk {
         return this;
     }
     
+    public Milk formTree(String source) throws Exception {
+        evalToTree(source);
+        Formed = Fm.recv(Tree).Fd;
+        return this;
+    }
+    
     public Milk eval(String source) throws Exception {
         Ts = null;
         Tree = null;
-        evalToTree(source);
+        formTree(source);
+//        evalToTree(source);
         Ge.recvSrc(Tree);
         return this;
     }

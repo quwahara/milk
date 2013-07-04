@@ -26,25 +26,36 @@ public class Tokenizer {
 //    String choprgx;
     LinkedHashMap<String, Pattern> pmap;    /// pattern map
     
-    
-    
-    public Tokenizer init() throws Exception {
+    public static String defaultConf() {
+        String s = "";
+        s += "es ... \\\\." + "\n";               /// EScape
+        s += "sy ... \\\\" + "\n";                /// SYmbol
+        s += "nl ... (\\r\\n|\\r|\\n)" + "\n";    /// New Line
+        s += "sp ... ( +|\\t+|\\s+)" + "\n";      /// SPace
+        s += "sc ... ^#+" + "\n";                 /// SeCtion
+        s += "ty ... class" + "\n";               /// TYpe
+        s += "bg ... (begin|then|do)" + "\n";     /// BeGin
+        s += "en ... end" + "\n";                 /// ENd
+        s += "fn ... [so]?fun" + "\n";            /// FuNction
+        s += "cn ... [s]?cons" + "\n";            /// CoNstructor
+        s += "de ... \\d+" + "\n";                /// DEcimal
+        s += "id ... \\w+" + "\n";                /// IDent
+        s += "ay ... ." + "\n";                   /// AnY
+        return s;
+    }
+
+    public Tokenizer init(String conf) throws Exception {
         
         pmap = new LinkedHashMap<String, Pattern>();
 
-        pmap.put("es", Pattern.compile("\\\\."));               /// EScape
-        pmap.put("sy", Pattern.compile("\\\\"));                /// SYmbol
-        pmap.put("nl", Pattern.compile("(\\r\\n|\\r|\\n)"));    /// New Line
-        pmap.put("sp", Pattern.compile("( +|\\t+|\\s+)"));      /// SPace
-        pmap.put("sc", Pattern.compile("^#+"));                 /// SeCtion
-        pmap.put("ty", Pattern.compile("class"));               /// TYpe
-        pmap.put("bg", Pattern.compile("(begin|then|do)"));     /// BeGin
-        pmap.put("en", Pattern.compile("end"));                 /// ENd
-        pmap.put("fn", Pattern.compile("[so]?fun"));            /// FuNction
-        pmap.put("de", Pattern.compile("\\d+"));                /// DEcimal
-        pmap.put("id", Pattern.compile("\\w+"));                /// IDent
-        pmap.put("ay", Pattern.compile("."));                   /// AnY
-
+        String lines[] = S.toLines(conf);
+        for (String l : lines) {
+            String[] kv = l.split(" \\.\\.\\. ");
+            if (S.isBlank(kv[0])) {
+                continue;
+            }
+            pmap.put(kv[0], Pattern.compile(kv[1]));
+        }
         return this;
     }
     
@@ -79,8 +90,8 @@ public class Tokenizer {
             }
         };
 
-        //  chop to tokens
-        FuncBin<Token, Effect, List<Token>> chop;
+//        //  chop to tokens
+//        FuncBin<Token, Effect, List<Token>> chop;
 //        final Pattern chopptn = Pattern.compile(choprgx);
         
 //        chop = new FuncBin<Token, Effect, List<Token>>() {
@@ -95,33 +106,34 @@ public class Tokenizer {
 //            }
 //        };
 
-        chop = new FuncBin<Token, Effect, List<Token>>() {
-            public List<Token> eval(Token c, Effect ctx) {
-                List<Token> l = new ArrayList<Token>();
-                Matcher m;
-                int start = 0;
-                int end = c.V.length();
-                boolean found;
-                while (start < end) {
-                    found = false;
-                    for (String k : pmap.keySet()) {
-                        m = pmap.get(k).matcher(c.V);
-                        if(m.find(start) && m.start() == start) {
-                            Token t = new Token(m.group(), k, c.Line, m.start());
-                            l.add(t);
-                            start = m.end();
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (false == found) {
-                        ctx.E = new Exception("could not much any patterns");
-                        break;
-                    }
-                }
-                return l;
-            }
-        };
+//        chop = new FuncBin<Token, Effect, List<Token>>() {
+//            public List<Token> eval(Token c, Effect ctx) {
+//                List<Token> l = new ArrayList<Token>();
+//                Matcher m;
+//                int start = 0;
+//                int end = c.V.length();
+//                boolean found;
+//                while (start < end) {
+//                    found = false;
+//                    for (String k : pmap.keySet()) {
+//                        m = pmap.get(k).matcher(c.V);
+//                        if(m.find(start) && m.start() == start) {
+//                            Token t = new Token(m.group(), k, c.Line, m.start());
+//                            l.add(t);
+//                            start = m.end();
+//                            found = true;
+//                            break;
+//                        }
+//                    }
+//                    if (false == found) {
+//                        ctx.E = new Exception("could not much any patterns");
+//                        break;
+//                    }
+//                }
+//                return l;
+//            }
+//        };
+//        chop = chopFun();
 
         //  concantinate double quote again
         FuncBin<Token, Effect, List<Token>> concatdq;
@@ -175,7 +187,8 @@ public class Tokenizer {
 //                    .setTraceOn(true)
                     .init(l)
                     .each(tolines)
-                    .each(chop)
+                    .each(chop())
+//                    .each(chop)
                     .each(concatdq)
                     .each(section())
                     .each(trim)
@@ -187,6 +200,37 @@ public class Tokenizer {
         
 
         return ef.L;
+    }
+    
+    public FuncBin<Token, Effect, List<Token>> chop() {
+        return new FuncBin<Token, Effect, List<Token>>() {
+            public List<Token> eval(Token c, Effect ctx) {
+                List<Token> l = new ArrayList<Token>();
+                Matcher m;
+                int start = 0;
+                int end = c.V.length();
+                boolean found;
+                while (start < end) {
+                    found = false;
+                    for (String k : pmap.keySet()) {
+                        m = pmap.get(k).matcher(c.V);
+                        if(m.find(start) && m.start() == start) {
+                            Token t = new Token(m.group(), k, c.Line, m.start());
+                            l.add(t);
+                            start = m.end();
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (false == found) {
+                        ctx.E = new Exception("could not much any patterns");
+                        break;
+                    }
+                }
+                return l;
+            }
+        };
+        
     }
     
     /**

@@ -59,24 +59,26 @@ public class Generator {
 
         cw.visitSource(name + ".java", null);
                 
-        MethodVisitor mv;
-        {
-            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
-            mv.visitCode();
-            mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
-                    "java/lang/Object",
-                    "<init>",
-                    "()V");
-            mv.visitInsn(Opcodes.RETURN);
-            mv.visitMaxs(0, 0);
-            mv.visitEnd();
-        }
+//        MethodVisitor mv;
+//        {
+//            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+//            mv.visitCode();
+//            mv.visitVarInsn(Opcodes.ALOAD, 0);
+//            mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
+//                    "java/lang/Object",
+//                    "<init>",
+//                    "()V");
+//            mv.visitInsn(Opcodes.RETURN);
+//            mv.visitMaxs(0, 0);
+//            mv.visitEnd();
+//        }
         
         Token holder = t.query("%bg/expr");
         for (Token s : holder.subs()) {
             if (S.eq("fn", s.G)) {
                 recvFun(s, cw);
+            } else if (S.eq("cn", s.G)) {
+                recvCons(s, cw);
             }
         }
         
@@ -116,8 +118,23 @@ public class Generator {
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         }
+    }
+
+    public void recvCons(Token t, ClassVisitor cw) {
         
-        
+        MethodVisitor mv;
+        {
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+            mv.visitCode();
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
+                    "java/lang/Object",
+                    "<init>",
+                    "()V");
+            mv.visitInsn(Opcodes.RETURN);
+            mv.visitMaxs(0, 0);
+            mv.visitEnd();
+        }
     }
 
     @Override

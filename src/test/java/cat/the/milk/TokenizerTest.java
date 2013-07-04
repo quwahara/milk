@@ -32,7 +32,7 @@ public class TokenizerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Z = new Tokenizer();
-        Z.init();
+        Z.init(Tokenizer.defaultConf());
         Ef = new Effect();
         Ts = new ArrayList<Token>();
         Inp = "";

@@ -50,14 +50,6 @@ public class GeneratorTest extends TestCase {
         Epc += "\n";
         Epc += "  // compiled from: C.java\n";
         Epc += "\n";
-        Epc += "  // access flags 0x1\n";
-        Epc += "  public <init>()V\n";
-        Epc += "    ALOAD 0\n";
-        Epc += "    INVOKESPECIAL java/lang/Object.<init> ()V\n";
-        Epc += "    RETURN\n";
-        Epc += "    MAXSTACK = 1\n";
-        Epc += "    MAXLOCALS = 1\n";
-        Epc += "\n";
         Epc += "  // access flags 0x9\n";
         Epc += "  public static main([Ljava/lang/String;)V\n";
         Epc += "    GETSTATIC java/lang/System.out : Ljava/io/PrintStream;\n";
@@ -66,11 +58,19 @@ public class GeneratorTest extends TestCase {
         Epc += "    RETURN\n";
         Epc += "    MAXSTACK = 2\n";
         Epc += "    MAXLOCALS = 1\n";
+        Epc += "\n";
+        Epc += "  // access flags 0x1\n";
+        Epc += "  public <init>()V\n";
+        Epc += "    ALOAD 0\n";
+        Epc += "    INVOKESPECIAL java/lang/Object.<init> ()V\n";
+        Epc += "    RETURN\n";
+        Epc += "    MAXSTACK = 1\n";
+        Epc += "    MAXLOCALS = 1\n";
         Epc += "}\n";
         
         Mi.eval(Inp);
         Act = Mi.Ge.toString();
-//        System.out.println(Act);
+        System.out.println(Act);
         assertEquals(Epc, Act);
     }
 
